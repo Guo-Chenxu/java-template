@@ -3,7 +3,9 @@ package com.guochenxu.javatemplate.utils;
 import com.guochenxu.javatemplate.entity.AdminUser;
 import lombok.extern.slf4j.Slf4j;
 
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * 哈希工具
@@ -14,28 +16,59 @@ import java.security.MessageDigest;
  */
 @Slf4j
 public class HashUtil {
-    public static String hash256(String password) {
+
+    /**
+     * sha256加密
+     */
+    public static String sha256(String password) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             byte[] hash = md.digest(password.getBytes());
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : hash) {
-                String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) {
-                    hexString.append('0');
-                }
-                hexString.append(hex);
-            }
-            return hexString.toString();
+            return bytesToHex(hash);
         } catch (Exception e) {
             log.error("hash error", e);
             throw new RuntimeException(e);
         }
     }
 
-    public static void main(String[] args){
+    /**
+     * MD5加密方法
+     *
+     * @param input 输入字符串
+     * @return 32位小写MD5哈希值
+     */
+    public static String md5(String input) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] digest = md.digest(input.getBytes(StandardCharsets.UTF_8));
+            return bytesToHex(digest);
+        } catch (NoSuchAlgorithmException e) {
+            log.error("hash error", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 字节数组转十六进制字符串
+     *
+     * @param bytes 字节数组
+     * @return 十六进制字符串
+     */
+    private static String bytesToHex(byte[] bytes) {
+        StringBuilder hexString = new StringBuilder();
+        for (byte b : bytes) {
+            String hex = Integer.toHexString(0xff & b);
+            if (hex.length() == 1) {
+                hexString.append('0');
+            }
+            hexString.append(hex);
+        }
+        return hexString.toString();
+    }
+
+    public static void main(String[] args) {
         String p = "superadmin135@";
-        System.out.println(hash256(p));
+        System.out.println(sha256(p));
         AdminUser adminUser = new AdminUser();
         adminUser.setPassword(p);
         adminUser.encryptPassword();

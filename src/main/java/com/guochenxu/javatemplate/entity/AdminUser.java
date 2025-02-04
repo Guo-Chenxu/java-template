@@ -45,14 +45,14 @@ public class AdminUser implements Serializable {
     private Integer deleted;
 
     public void encryptPassword() {
-        this.password = HashUtil.hash256(this.password);
+        this.password = HashUtil.sha256(this.password);
     }
 
     public void encryptPassword(String _password) {
-        this.password = HashUtil.hash256(_password);
+        this.password = HashUtil.sha256(_password);
     }
 
     public boolean checkPassword(String _password) {
-        return HashUtil.hash256(_password).equals(this.password);
+        return HashUtil.sha256(_password).equals(this.password);
     }
 }
